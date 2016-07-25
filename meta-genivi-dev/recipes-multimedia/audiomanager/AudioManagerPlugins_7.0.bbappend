@@ -1,5 +1,13 @@
 FILESEXTRAPATHS_append := ":${THISDIR}/${PN}"
 
+PROVIDES = "AudioManagerPlugins"
+
+RPROVIDES_${PN} = "AudioManagerPlugins"
+
+BPN = "AudioManagerPlugins"
+
+PN = "audiomanagerplugins"
+
 SRC_URI_append = "\
 	file://0001-Porting-Pulse-Routing-Interface-from-AM-v1.x-to-AM-v.patch \
     file://0001-Porting-Pulse-Control-Interface-from-AM-v1.x-to-AM-v.patch \
