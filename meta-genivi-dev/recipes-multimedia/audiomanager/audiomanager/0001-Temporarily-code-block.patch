@@ -4,13 +4,13 @@ Date: Fri, 25 Mar 2016 11:45:48 +0900
 Subject: [PATCH] Temporarily code block for rpi2
 
 ---
- AudioManagerDaemon/src/CAmDatabaseHandlerMap.cpp |    2 +-
+ AudioManagerCore/src/CAmDatabaseHandlerMap.cpp |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/AudioManagerDaemon/src/CAmDatabaseHandlerMap.cpp b/AudioManagerDaemon/src/CAmDatabaseHandlerMap.cpp
+diff --git a/AudioManagerCore/src/CAmDatabaseHandlerMap.cpp b/AudioManagerCore/src/CAmDatabaseHandlerMap.cpp
 index 427b805..383e433 100644
---- a/AudioManagerDaemon/src/CAmDatabaseHandlerMap.cpp
-+++ b/AudioManagerDaemon/src/CAmDatabaseHandlerMap.cpp
+--- a/AudioManagerCore/src/CAmDatabaseHandlerMap.cpp
++++ b/AudioManagerCore/src/CAmDatabaseHandlerMap.cpp
 @@ -616,7 +616,7 @@ am_Error_e CAmDatabaseHandlerMap::enterSinkDB(const am_Sink_s & sinkData, am_sin
      assert(sinkData.sinkID<DYNAMIC_ID_BOUNDARY);
      assert(sinkData.domainID!=0);

@@ -1,7 +1,7 @@
-From 1acad653234dde177ab86fe720591693d6d23622 Mon Sep 17 00:00:00 2001
+From 3b37b9e4045c58e43998426f8d8a82f04cb6ad40 Mon Sep 17 00:00:00 2001
 From: Jonathan Maw <jonathan.maw@codethink.co.uk>
 Date: Mon, 25 Jan 2016 16:40:15 +0000
-Subject: [PATCH] Porting Pulse Routing Interface from AM v1.x to AM v3.0
+Subject: [PATCH 1/2] Porting Pulse Routing Interface from AM v1.x to AM v3.0
 
 This Routing Interface is needed for any application that will
 be developed on top of AM and will use PulseAudio Sound Server
@@ -17,7 +17,7 @@ This commit is based off a patch by Adrian Scarlat <adrian.scarlat@windriver.com
 
 Signed-off-by: Jonathan Maw <jonathan.maw@codethink.co.uk>
 ---
- CMakeLists.txt                                     |   6 +
+ CMakeLists.txt                                     |  10 +-
  PluginRoutingInterfacePulse/CMakeLists.txt         | 105 +++
  PluginRoutingInterfacePulse/README                 |  50 ++
  .../data/libPluginRoutingInterfacePULSE.conf       |  55 ++
@@ -25,7 +25,7 @@ Signed-off-by: Jonathan Maw <jonathan.maw@codethink.co.uk>
  .../include/RoutingSenderPULSE.h                   | 131 +++
  .../src/RoutingSenderMainloopPULSE.cpp             | 610 ++++++++++++++
  .../src/RoutingSenderPULSE.cpp                     | 914 +++++++++++++++++++++
- 8 files changed, 1968 insertions(+)
+ 8 files changed, 1968 insertions(+), 4 deletions(-)
  create mode 100644 PluginRoutingInterfacePulse/CMakeLists.txt
  create mode 100644 PluginRoutingInterfacePulse/README
  create mode 100755 PluginRoutingInterfacePulse/data/libPluginRoutingInterfacePULSE.conf
@@ -35,32 +35,40 @@ Signed-off-by: Jonathan Maw <jonathan.maw@codethink.co.uk>
  create mode 100644 PluginRoutingInterfacePulse/src/RoutingSenderPULSE.cpp
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index aa885e5..d70b555 100644
+index 9a1043e..b7dce57 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -32,6 +32,8 @@ OPTION(WITH_ROUTING_INTERFACE_CAPI
-        "build with routing iterface common-api plugin" ON)   
+@@ -31,6 +31,8 @@ OPTION(WITH_ROUTING_INTERFACE_CAPI
+        "build with routing iterface common-api plugin" OFF)   
  OPTION(WITH_ROUTING_INTERFACE_DBUS
-        "build with routing iterface dbus plugin" OFF)                    
-+OPTION( WITH_ROUTING_INTERFACE_PULSE
-+    "Enable PULSE Audio routing plugin interface" OFF )
- 
- IF (WITH_COMMAND_INTERFACE_COMMON_CAPI)
- 	add_subdirectory(PluginCommandInterfaceCAPI)
-@@ -57,6 +59,10 @@ IF(WITH_ROUTING_INTERFACE_DBUS)
- 		add_subdirectory(PluginRoutingInterfaceDBus)
+        "build with routing iterface dbus plugin" OFF)  
++OPTION(WITH_ROUTING_INTERFACE_PULSE
++       "Enable PULSE Audio routing plugin interface" OFF )
+ OPTION (WITH_TEST_CONTROLLER 
+         "Build with the test controller" OFF)  
+ OPTION (WITH_GENERIC_CONTROLLER 
+@@ -68,7 +70,10 @@ ENDIF(WITH_ROUTING_INTERFACE_CAPI)
+ IF(WITH_ROUTING_INTERFACE_DBUS) 
+ 		add_subdirectory(PluginRoutingInterfaceDbus)
  ENDIF(WITH_ROUTING_INTERFACE_DBUS) 
-         
-+IF(WITH_ROUTING_INTERFACE_PULSE)
-+		add_subdirectory(PluginRoutingInterfacePulse)
-+ENDIF(WITH_ROUTING_INTERFACE_PULSE)
+-             
 +
++IF(WITH_ROUTING_INTERFACE_PULSE)
++                add_subdirectory(PluginRoutingInterfacePulse)
++ENDIF(WITH_ROUTING_INTERFACE_PULSE)
+         
  add_custom_target(plugins-install
    COMMAND
-      "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=plugin
+@@ -81,6 +86,3 @@ add_custom_target(plugin-test-install
+      "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=plugin-tests
+      -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
+ )
+-
+-
+-
 diff --git a/PluginRoutingInterfacePulse/CMakeLists.txt b/PluginRoutingInterfacePulse/CMakeLists.txt
 new file mode 100644
-index 0000000..7d01f99
+index 0000000..a6ee140
 --- /dev/null
 +++ b/PluginRoutingInterfacePulse/CMakeLists.txt
 @@ -0,0 +1,105 @@

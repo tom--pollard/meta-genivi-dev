@@ -1,7 +1,7 @@
-From a08e2cfc7d5d3c0ce5f0423c6cf3910595fbe3d4 Mon Sep 17 00:00:00 2001
+From 26c05db701a2eead130888d5b5a990efb160a668 Mon Sep 17 00:00:00 2001
 From: Jonathan Maw <jonathan.maw@codethink.co.uk>
 Date: Mon, 25 Jan 2016 17:31:13 +0000
-Subject: [PATCH] Porting Pulse Control Interface from AM v1.x to AM v3.0
+Subject: [PATCH 2/2] Porting Pulse Control Interface from AM v1.x to AM v3.0
 
 This Control Interface is the "heart" of the AM; It is needed
  by any application that will be developed on top of AM and will use
@@ -33,32 +33,32 @@ Signed-off-by: Jonathan Maw <jonathan.maw@codethink.co.uk>
  create mode 100644 PluginControlInterfacePulse/src/ControlSender.cpp
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 22c46cc..12919e1 100644
+index b7dce57..20d3481 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -26,6 +26,8 @@ OPTION (WITH_COMMAND_INTERFACE_DBUS
-         "build with commandinterface dbus plugin" OFF )
+@@ -33,6 +33,8 @@ OPTION(WITH_ROUTING_INTERFACE_DBUS
+        "build with routing iterface dbus plugin" OFF)  
+ OPTION(WITH_ROUTING_INTERFACE_PULSE
+        "Enable PULSE Audio routing plugin interface" OFF )
++OPTION(WITH_PULSE_CONTROL_PLUGIN
++       "Enable PULSE Audio control plugin interface" OFF)
  OPTION (WITH_TEST_CONTROLLER 
-         "Build with the test controller" ON)     
-+OPTION( WITH_PULSE_CONTROL_PLUGIN
-+    "Enable PULSE Audio control plugin interface" OFF)
- OPTION (WITH_ROUTING_INTERFACE_ASYNC
-         "build with routing interface async plugin" ON)
- OPTION(WITH_ROUTING_INTERFACE_CAPI
-@@ -47,6 +49,10 @@ IF (WITH_TEST_CONTROLLER)
- 	add_subdirectory(PluginControlInterface)
- ENDIF (WITH_TEST_CONTROLLER)   
- 
-+IF (WITH_PULSE_CONTROL_PLUGIN)
-+	add_subdirectory(PluginControlInterfacePulse)
-+ENDIF (WITH_PULSE_CONTROL_PLUGIN)
+         "Build with the test controller" OFF)  
+ OPTION (WITH_GENERIC_CONTROLLER 
+@@ -74,6 +76,10 @@ ENDIF(WITH_ROUTING_INTERFACE_DBUS)
+ IF(WITH_ROUTING_INTERFACE_PULSE)
+                 add_subdirectory(PluginRoutingInterfacePulse)
+ ENDIF(WITH_ROUTING_INTERFACE_PULSE)
 +
- IF (WITH_ROUTING_INTERFACE_ASYNC)
- 	add_subdirectory(PluginRoutingInterfaceAsync)
- ENDIF (WITH_ROUTING_INTERFACE_ASYNC)  
++IF (WITH_PULSE_CONTROL_PLUGIN)
++                add_subdirectory(PluginControlInterfacePulse)
++ENDIF(WITH_PULSE_CONTROL_PLUGIN)
+         
+ add_custom_target(plugins-install
+   COMMAND
 diff --git a/PluginControlInterfacePulse/CMakeLists.txt b/PluginControlInterfacePulse/CMakeLists.txt
 new file mode 100644
-index 0000000..1b8aa67
+index 0000000..7f772e6
 --- /dev/null
 +++ b/PluginControlInterfacePulse/CMakeLists.txt
 @@ -0,0 +1,99 @@
