@@ -16,7 +16,11 @@ FILES_${PN} += "\
     ${libdir}/systemd/user/* \
     ${libdir}/* \
     /opt/genivi-11-hmi/bin/genivi-11-hmi \
+    /usr/share/applications/* \
     "
 
 do_install_append() {
+        install -d ${D}/usr/share/applications/
+        install -m 0444 ${WORKDIR}/git/manifests/* \
+                        ${D}/usr/share/applications/
 }
